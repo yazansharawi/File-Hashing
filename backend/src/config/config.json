@@ -1,0 +1,12 @@
+{
+    "development": {
+      "username": "root",
+      "password": "secretpassword",
+      "database": "File-Hasing",
+      "host": "localhost",
+      "port": "3306",
+      "dialect": "mysql",
+      "logging": true
+    }
+  }
+  
