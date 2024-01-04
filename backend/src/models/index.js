@@ -22,9 +22,6 @@ fs
         return (file.indexOf('.') !== 0) && (file !== basename) && (file.slice(-3) === '.js');
     })
     .forEach(file => {
-
-        // generate the module
-        //.init(sequelize, Sequelize.DataTypes); should be removed if we need to use the dynamic Sequelize 
         const model = require(path.join(__dirname, file)).init(sequelize, Sequelize.DataTypes);
         db[model.name] = model;
     });
