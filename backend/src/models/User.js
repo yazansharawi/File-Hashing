@@ -5,7 +5,7 @@ class User extends Sequelize.Model {
   static init(sequelize, DataTypes) {
     return super.init(
       {
-        userUid: DataTypes.UUID,
+        userUuid: DataTypes.UUID,
         userName: DataTypes.STRING,
         password: DataTypes.STRING,
         email: DataTypes.STRING,
@@ -33,12 +33,12 @@ class User extends Sequelize.Model {
 
   static associate(models) {
     this.hasMany(models.Certificate, {
-      foreignKey: "userUid",
-      sourceKey: "userUid",
+      foreignKey: "userUuid",
+      sourceKey: "userUuid",
     });
     this.hasMany(models.MediaRecord, {
       foreignKey: "ownerUuid",
-      sourceKey: "userUid",
+      sourceKey: "userUuid",
     });
   }
 }

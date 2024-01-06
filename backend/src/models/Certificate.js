@@ -5,7 +5,10 @@ class Certificate extends Sequelize.Model {
     return super.init(
       {
         CertificateNumber: DataTypes.INTEGER,
-        userUid: DataTypes.STRING,
+        userUuid: DataTypes.STRING,
+        createdAt: DataTypes.DATE,
+        updatedAt: DataTypes.DATE,
+        deletedAt:DataTypes.DATE,
       },
       {
         tableName: "Certificate",
@@ -17,8 +20,8 @@ class Certificate extends Sequelize.Model {
 
   static associate(models) {
     this.belongsTo(models.User, {
-      foreignKey: "userUid",
-      targetKey: "userUid",
+      foreignKey: "userUuid",
+      targetKey: "userUuid",
     });
   }
 }

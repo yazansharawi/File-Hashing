@@ -1,5 +1,6 @@
 import Vue from 'vue';
 import Router from 'vue-router';
+import { isAuthenticated } from '../../middleware/guards'; 
 
 Vue.use(Router);
 
@@ -39,14 +40,16 @@ const routes = [
 ];
 
 const router = new Router({
-    mode: 'history',
-    routes
-  });
-  
-  router.afterEach((to) => {
-    const routeName = to.name;
-    const metaTitle = routeName ? `${routeName}` : "Your App Name";
-    document.title = metaTitle;
-  });
-  
-  export default router;
+  mode: 'history',
+  routes
+});
+
+router.beforeEach((to, from, next) => {
+  if (to.name !== 'loginPage' && !isAuthenticated()) {
+    next({ name: 'loginPage' });
+  } else {
+    next();
+  }
+});
+
+export default router;

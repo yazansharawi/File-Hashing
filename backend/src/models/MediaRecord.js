@@ -4,12 +4,14 @@ class MediaRecord extends Sequelize.Model {
   static init(sequelize, DataTypes) {
     return super.init(
       {
-        mediaId: DataTypes.INTEGER,
-        mediaUid: DataTypes.UUID,
+        mediaUuid: DataTypes.UUID,
         ownerUuid: DataTypes.STRING,
         hash: DataTypes.STRING,
         contentType: DataTypes.STRING,
         dateRegistered: DataTypes.DATE,
+        createdAt: DataTypes.DATE,
+        updatedAt: DataTypes.DATE,
+        deletedAt:DataTypes.DATE,
       },
       {
         tableName: "MediaRecord",
@@ -20,7 +22,7 @@ class MediaRecord extends Sequelize.Model {
   }
 
   static associate(models) {
-    this.belongsTo(models.User, { foreignKey: 'ownerUuid', targetKey: 'userUid' });
+    this.belongsTo(models.User, { foreignKey: 'ownerUuid', targetKey: 'userUuid' });
   }
 }
 

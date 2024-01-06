@@ -56,7 +56,6 @@
                 block
                 class="button"
                 elevation="0"
-                :disabled="!isFormValid"
               >
                 Login
               </v-btn>
@@ -94,19 +93,27 @@ export default {
       visible: false,
     };
   },
-  computed: {
-    isFormValid() {
-      return (
-        !!this.userName &&
-        this.userPassword.length >= 10 &&
-        this.userEmail.includes("@")
-      );
-    },
-  },
 
   methods: {
     async Login() {
-      console.log("hi");
+      try {
+        let data = {
+          email: this.userEmail,
+          password: this.userPassword,
+        };
+        const response = await this.$axios.post("user/login", data);
+        if (response.status === 200) {
+          this.$store.dispatch("loginSuccess", {
+            token: response.data.token,
+            userUuid: response.data.userUuid, 
+          });
+          this.$router.push({ name: "HomePage" });
+        } else {
+          console.error("Login failed:", response);
+        }
+      } catch (error) {
+        console.error("Error during login:", error);
+      }
     },
   },
 };

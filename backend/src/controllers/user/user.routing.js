@@ -1,5 +1,4 @@
 const postActions = require("./post.actions");
-const getActions = require("./get.actions")
 
 module.exports = {
   "/": {
@@ -7,4 +6,19 @@ module.exports = {
       action: postActions.createUser,
     },
   },
+  "/login": {
+    post: {
+      action: postActions.loginUser,
+    },
+  },
+  "/forgetPass": {
+    post: {
+      action: postActions.changePass,
+    },
+  },
+  "/verifyEmail": {
+    post: {
+      action: postActions.checkEmail,
+    },
+  }    
 };

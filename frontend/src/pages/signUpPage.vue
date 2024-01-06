@@ -113,11 +113,11 @@ export default {
       };
       const response = await this.$axios.post("user", data);
       if (response.status === 201) {
-        //     this.$store.dispatch("signUpSuccess", {
-        //   user: response.data.user,
-        //   token: response.data.token,
-        //   userUuid:response.data.userUuid
-        // });
+        this.$store.dispatch("signUpSuccess", {
+          token: response.data.token,
+          userUuid: response.data.userUuid,
+        });
+
         this.$router.push({
           name: "HomePage",
           params: { uuid: response.data.userUuid },

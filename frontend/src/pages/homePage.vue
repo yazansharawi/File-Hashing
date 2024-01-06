@@ -1,37 +1,49 @@
 <template>
-  <div>
+  <div style="background-color: #f5f5fa; height: 100vh">
+    <Nav :homePage="true" />
+    <eventDialog
+      :model="eventDialog"
+      @update:model="eventDialog = $event"
+      :eventType="snackbarText"
+    />
     <div class="main">
-      <div
-        class="drop-area"
-        @dragenter="dragEnter"
-        @dragover.prevent
-        @dragleave="dragLeave"
-        @drop="drop"
-      >
-        <div class="insideUploader">
-          <p v-if="dragging">Drop your file here</p>
-          <p v-else>Drag and drop a file here</p>
-          <button @click="openFileInput" class="button-style">
-            Select Files
-          </button>
-        </div>
+      <div class="file-input-button">
+        <v-file-input
+          label="File input"
+          class="file-input"
+          :disabled="loading"
+          v-model="selectedFile"
+        />
+        <v-btn x-large depressed :disabled="loading" @click="drop">
+          <div v-if="loading">
+            <v-progress-circular :size="25" indeterminate />
+          </div>
+          <div v-else>
+            <v-icon class="mr-1">mdi-upload</v-icon>
+            UPLOAD FILE
+          </div>
+        </v-btn>
       </div>
-
-      <input
-        type="file"
-        ref="fileInput"
-        style="display: none"
-        @change="handleFileSelect"
-      />
     </div>
   </div>
 </template>
 
 <script>
+import Nav from "../components/navbar.vue";
+import eventDialog from "../dialogs/eventDialog.vue";
 export default {
   name: "HomePage",
+  components: {
+    Nav,
+    eventDialog,
+  },
   data: () => ({
     dragging: false,
+    snackbar: false,
+    snackbarText: "",
+    selectedFile: null,
+    loading: false,
+    eventDialog: false,
   }),
   methods: {
     dragEnter() {
@@ -40,21 +52,45 @@ export default {
     dragLeave() {
       this.dragging = false;
     },
-    drop(event) {
-      event.preventDefault();
-      this.dragging = false;
-      const file = event.dataTransfer.files[0];
-      if (file) {
-        console.log("Dropped file:", file);
-      }
+    async hashFile(file) {
+      const buffer = await file.arrayBuffer();
+      const digest = await crypto.subtle.digest("SHA-256", buffer);
+      const hashArray = Array.from(new Uint8Array(digest));
+      const hashHex = hashArray
+        .map((b) => b.toString(16).padStart(2, "0"))
+        .join("");
+      return hashHex;
     },
-    openFileInput() {
-      this.$refs.fileInput.click();
-    },
-    handleFileSelect(event) {
-      const file = event.target.files[0];
-      if (file) {
-        console.log("Selected file:", file);
+    async drop() {
+      this.loading = true;
+
+      if (this.selectedFile) {
+        const fileHash = await this.hashFile(this.selectedFile);
+        try {
+          const response = await this.$axios.post(
+            `/MediaRecord/register-by-user-uuid/${this.$store.getters.user.userUuid}`,
+            { hash: fileHash, contentType: this.selectedFile.type }
+          );
+
+          this.snackbarText = response.data.message;
+          this.eventDialog = true;
+        } catch (error) {
+          if (error.response && error.response.status === 409) {
+            this.snackbarText = `This file is already registered by ${error.response.data.ownerName}.`;
+            this.eventDialog = true;
+          } else {
+            console.error("Error uploading file:", error);
+            this.snackbarText = "Failed to upload file. Please try again.";
+            this.eventDialog = true;
+          }
+        }
+
+        this.loading = false;
+        this.snackbar = true;
+      } else {
+        this.snackbarText = "No file selected";
+        this.snackbar = true;
+        this.loading = false;
       }
     },
   },
@@ -62,7 +98,7 @@ export default {
 </script>
 
 <style scoped>
-*{
+* {
   background-color: #f5f5fa;
 }
 .drop-area {
@@ -74,7 +110,7 @@ export default {
   cursor: pointer;
 }
 .main {
-  height: 100vh;
+  height: 80vh;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -84,9 +120,11 @@ export default {
   flex-direction: column;
   gap: 10px;
 }
-.button-style {
-  border: black 1px solid;
-  border-radius: 10px;
-  width: 100px;
+.file-input {
+  max-width: 500px;
+}
+.file-input-button {
+  display: flex;
+  flex-direction: column;
 }
 </style>
