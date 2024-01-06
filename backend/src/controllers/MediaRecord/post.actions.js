@@ -1,7 +1,4 @@
 const models = require("../../models");
-const crypto = require("crypto");
-const fs = require("fs");
-const formidable = require("formidable");
 const User = models.User;
 const MediaRecord = models.MediaRecord;
 
