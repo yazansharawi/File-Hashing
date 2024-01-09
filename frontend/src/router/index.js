@@ -1,6 +1,6 @@
-import Vue from 'vue';
-import Router from 'vue-router';
-import { isAuthenticated } from '../../middleware/guards'; 
+import Vue from "vue";
+import Router from "vue-router";
+import { isAuthenticated } from "../../middleware/guards";
 
 Vue.use(Router);
 
@@ -40,13 +40,15 @@ const routes = [
 ];
 
 const router = new Router({
-  mode: 'history',
-  routes
+  mode: "history",
+  routes,
 });
 
 router.beforeEach((to, from, next) => {
-  if (to.name !== 'loginPage' && !isAuthenticated()) {
-    next({ name: 'loginPage' });
+  const authRequiredRoutes = ["HomePage"];
+
+  if (authRequiredRoutes.includes(to.name) && !isAuthenticated()) {
+    next({ name: "loginPage" });
   } else {
     next();
   }

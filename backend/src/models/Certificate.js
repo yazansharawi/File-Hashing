@@ -4,7 +4,7 @@ class Certificate extends Sequelize.Model {
   static init(sequelize, DataTypes) {
     return super.init(
       {
-        CertificateNumber: DataTypes.INTEGER,
+        CertificateNumber: DataTypes.STRING,
         userUuid: DataTypes.STRING,
         createdAt: DataTypes.DATE,
         updatedAt: DataTypes.DATE,

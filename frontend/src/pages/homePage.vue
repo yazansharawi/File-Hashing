@@ -74,6 +74,7 @@ export default {
 
           this.snackbarText = response.data.message;
           this.eventDialog = true;
+          this.selectedFile = null;
         } catch (error) {
           if (error.response && error.response.status === 409) {
             this.snackbarText = `This file is already registered by ${error.response.data.ownerName}.`;

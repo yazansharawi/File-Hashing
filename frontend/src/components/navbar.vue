@@ -24,7 +24,6 @@ export default {
   },
   methods: {
     async logout() {
-      console.log("this.$store", this.$store);
       await this.$store.dispatch("logout");
       this.$router.push({ name: "loginPage" });
     },

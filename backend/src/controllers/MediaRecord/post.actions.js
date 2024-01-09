@@ -1,6 +1,7 @@
 const models = require("../../models");
 const User = models.User;
 const MediaRecord = models.MediaRecord;
+const Certificate = models.Certificate;
 
 async function createNewMediaRecord(req, res) {
   const userUuid = req.params.uuid;
@@ -17,7 +18,6 @@ async function createNewMediaRecord(req, res) {
       ],
     });
 
-
     if (existingRecord) {
       console.log("Duplicate file detected");
       return res.status(409).json({
@@ -32,11 +32,36 @@ async function createNewMediaRecord(req, res) {
       contentType: contentType,
     });
 
-    res.status(201).json({ message: "File uploaded successfully", newRecord });
+    const certificateNumber = generateUniqueCertificateNumber();
+
+    const newCertificate = await Certificate.create({
+      CertificateNumber: certificateNumber,
+      userUuid: userUuid,
+    });
+
+    const user = await User.findOne({ where: { userUuid } });
+    console.log("Fetched user:", user);
+
+    let certificates = user.Certificate ? JSON.parse(user.Certificate) : [];
+    certificates.push(certificateNumber.toString());
+    await User.update(
+      { Certificate: JSON.stringify(certificates) },
+      { where: { userUuid: userUuid } }
+    );
+
+    res.status(201).json({
+      message: "File uploaded successfully",
+      newRecord,
+      newCertificate,
+    });
   } catch (error) {
     console.error("Error in createNewMediaRecord:", error);
     res.status(500).send("Error processing file upload");
   }
+}
+
+function generateUniqueCertificateNumber() {
+  return new Date().getTime();
 }
 
 module.exports = {

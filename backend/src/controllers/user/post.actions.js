@@ -18,7 +18,6 @@ async function createUser(req, res) {
     const token = jwt.sign({ userId: user.userId }, secretKey, {
       expiresIn: "1h",
     });
-
     res.status(201).json({
       message: "User created successfully",
       userUuid: user.userUuid,

@@ -112,6 +112,7 @@ export default {
         password: this.userPassword,
       };
       const response = await this.$axios.post("user", data);
+      console.log("response.data.userUuid",response.data.userUuid)
       if (response.status === 201) {
         this.$store.dispatch("signUpSuccess", {
           token: response.data.token,

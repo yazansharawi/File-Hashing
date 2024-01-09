@@ -5,18 +5,21 @@ class User extends Sequelize.Model {
   static init(sequelize, DataTypes) {
     return super.init(
       {
-        userUuid: DataTypes.UUID,
+        userUuid: {
+          type: DataTypes.UUID,
+          defaultValue: DataTypes.UUIDV4,
+        },
         userName: DataTypes.STRING,
         password: DataTypes.STRING,
         email: DataTypes.STRING,
         Certificate: {
-          type: DataTypes.ARRAY(DataTypes.STRING),
+          type: DataTypes.STRING,
           allowNull: true,
         },
         dateRegistered: DataTypes.DATE,
         createdAt: DataTypes.DATE,
         updatedAt: DataTypes.DATE,
-        deletedAt:DataTypes.DATE,
+        deletedAt: DataTypes.DATE,
       },
       {
         tableName: "User",
@@ -25,7 +28,7 @@ class User extends Sequelize.Model {
           beforeCreate: async (user) => {
             const salt = await bcrypt.genSalt(10);
             user.password = await bcrypt.hash(user.password, salt);
-          }
+          },
         },
       }
     );
