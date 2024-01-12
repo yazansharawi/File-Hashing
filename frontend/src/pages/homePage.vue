@@ -1,7 +1,8 @@
 <template>
   <div style="background-color: #f5f5fa; height: 100vh">
     <Nav :homePage="true" />
-    <eventDialog
+    <eventDialog :model="confirmationDialog" @update:model="confirm($event)" />
+    <registerDialog
       :model="eventDialog"
       @update:model="eventDialog = $event"
       :eventType="snackbarText"
@@ -14,7 +15,12 @@
           :disabled="loading"
           v-model="selectedFile"
         />
-        <v-btn x-large depressed :disabled="loading" @click="drop">
+        <v-btn
+          x-large
+          depressed
+          :disabled="loading"
+          @click="confirmationDialog = true"
+        >
           <div v-if="loading">
             <v-progress-circular :size="25" indeterminate />
           </div>
@@ -31,11 +37,13 @@
 <script>
 import Nav from "../components/navbar.vue";
 import eventDialog from "../dialogs/eventDialog.vue";
+import registerDialog from "../dialogs/registerDialog.vue";
 export default {
   name: "HomePage",
   components: {
     Nav,
     eventDialog,
+    registerDialog,
   },
   data: () => ({
     dragging: false,
@@ -44,8 +52,17 @@ export default {
     selectedFile: null,
     loading: false,
     eventDialog: false,
+    confirmationDialog: false,
   }),
   methods: {
+    confirm(event) {
+      if (event) {
+        this.drop();
+      } else {
+        this.confirmationDialog = false;
+        this.selectedFile = null;
+      }
+    },
     dragEnter() {
       this.dragging = true;
     },
@@ -65,6 +82,7 @@ export default {
       this.loading = true;
 
       if (this.selectedFile) {
+        this.confirmationDialog = false;
         const fileHash = await this.hashFile(this.selectedFile);
         try {
           const response = await this.$axios.post(
@@ -84,6 +102,7 @@ export default {
             this.snackbarText = "Failed to upload file. Please try again.";
             this.eventDialog = true;
           }
+          this.selectedFile = null;
         }
 
         this.loading = false;

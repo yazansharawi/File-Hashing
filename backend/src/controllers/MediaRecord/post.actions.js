@@ -10,19 +10,25 @@ async function createNewMediaRecord(req, res) {
   try {
     const existingRecord = await MediaRecord.findOne({
       where: { hash },
-      include: [
-        {
-          model: User,
-          attributes: ["userName"],
-        },
-      ],
     });
 
+    const user = await User.findOne({ where: { userUuid } });
+
     if (existingRecord) {
+      let sameUser = false;
+      let existingHolder = null;
+      let uuid = existingRecord.dataValues.ownerUuid;
       console.log("Duplicate file detected");
+      if (user.userUuid === existingRecord.dataValues.ownerUuid) {
+        sameUser = true;
+      } else {
+        existingHolder = await User.findOne({ where: { userUuid: uuid } });
+      }
       return res.status(409).json({
         message: "Duplicate file detected",
-        ownerName: existingRecord.User.userName,
+        ownerName: sameUser
+          ? "Already Registered By You"
+          : existingHolder.userName,
       });
     }
 
@@ -33,16 +39,16 @@ async function createNewMediaRecord(req, res) {
     });
 
     const certificateNumber = generateUniqueCertificateNumber();
-
     const newCertificate = await Certificate.create({
       CertificateNumber: certificateNumber,
       userUuid: userUuid,
     });
 
-    const user = await User.findOne({ where: { userUuid } });
-    console.log("Fetched user:", user);
-
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
     let certificates = user.Certificate ? JSON.parse(user.Certificate) : [];
+
     certificates.push(certificateNumber.toString());
     await User.update(
       { Certificate: JSON.stringify(certificates) },

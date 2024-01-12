@@ -3,28 +3,15 @@
     <v-dialog v-model="dialog" width="400">
       <v-card class="text">
         <v-card-title>
-          <span class="text-h5">Confirmation Message</span>
+          <span class="text-h5">File Registration</span>
         </v-card-title>
-        <v-card-text>
-          Would you like to register this file to yourself ?
+        <v-card-text style="font-size: 16px; margin-top: 10px"
+          >{{ eventType }}
         </v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn
-            color="green-darken-1"
-            variant="text"
-            @click="closeDialog(false)"
-            class="elevation-0"
-          >
-            No
-          </v-btn>
-          <v-btn
-            color="green-darken-1"
-            variant="text"
-            @click="closeDialog(true)"
-            class="elevation-0"
-          >
-            Yes
+          <v-btn variant="text" color="primary" @click="closeDialog">
+            Close Dialog
           </v-btn>
         </v-card-actions>
       </v-card>
@@ -46,6 +33,11 @@ export default {
       required: false,
       default: null,
     },
+    eventType: {
+      type: String,
+      required: false,
+      default: null,
+    },
   },
   computed: {
     dialog: {
@@ -58,8 +50,8 @@ export default {
     },
   },
   methods: {
-    closeDialog(event) {
-      this.$emit("update:model", event);
+    closeDialog() {
+      this.$emit("update:model", false);
     },
   },
 };
