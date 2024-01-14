@@ -1,5 +1,5 @@
 const postActions = require("./post.actions");
-
+const getActions = require("./get.actions")
 module.exports = {
   "/": {
     post: {
@@ -20,5 +20,10 @@ module.exports = {
     post: {
       action: postActions.checkEmail,
     },
-  }    
+  },
+  "/user-by-id/:id": {
+    get: {
+      action: getActions.getUserById,
+    },
+  }     
 };

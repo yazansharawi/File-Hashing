@@ -4,6 +4,7 @@ const crypto = require("crypto");
 const secretKey = crypto.randomBytes(32).toString("hex");
 const User = models.User;
 const bcrypt = require('bcrypt');
+const  {internalAxios}  = require("../../services/axios");
 
 
 async function createUser(req, res) {
@@ -15,12 +16,16 @@ async function createUser(req, res) {
       password: password,
     });
 
+    let userUuid = await internalAxios.get("user/user-by-id/" + user.id);
+
+
     const token = jwt.sign({ userId: user.userId }, secretKey, {
       expiresIn: "1h",
     });
+
     res.status(201).json({
       message: "User created successfully",
-      userUuid: user.userUuid,
+      userUuid: userUuid.data.uuid,
       token,
     });
   } catch (error) {

@@ -14,6 +14,7 @@ async function createNewMediaRecord(req, res) {
 
     const user = await User.findOne({ where: { userUuid } });
 
+
     if (existingRecord) {
       let sameUser = false;
       let existingHolder = null;
@@ -27,7 +28,7 @@ async function createNewMediaRecord(req, res) {
       return res.status(409).json({
         message: "Duplicate file detected",
         ownerName: sameUser
-          ? "Already Registered By You"
+          ? "You"
           : existingHolder.userName,
       });
     }

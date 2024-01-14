@@ -1,14 +1,10 @@
 const Sequelize = require("sequelize");
 const bcrypt = require("bcrypt");
-
 class User extends Sequelize.Model {
   static init(sequelize, DataTypes) {
     return super.init(
       {
-        userUuid: {
-          type: DataTypes.UUID,
-          defaultValue: DataTypes.UUIDV4,
-        },
+        userUuid: DataTypes.UUID,
         userName: DataTypes.STRING,
         password: DataTypes.STRING,
         email: DataTypes.STRING,
